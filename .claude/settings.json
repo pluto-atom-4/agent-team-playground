@@ -1,0 +1,13 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "commands": {
+    "pm-sync": "gh issue list --label 'priority' && ck /plan",
+    "qa-test": "npm run test:vitest && npx playwright test",
+    "db-migrate": "npx prisma migrate dev && python -m scripts.migrate_sqlite_to_pg"
+  },
+  "hooks": {
+    "post-edit": "npx vitest run --changed"
+  }
+}
