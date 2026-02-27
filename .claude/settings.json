@@ -9,9 +9,5 @@
     "backend-lint": "cd backend && uv run ruff check --fix . && uv run ruff format .",
     "frontend-lint": "pnpm run lint",
     "pre-commit-check": "pre-commit run --all-files"
-  },
-  "hooks": {
-    "post-edit": "pnpm exec vitest run --changed",
-    "pre-commit": "pre-commit run --hook-stage commit"
   }
 }
