@@ -22,12 +22,30 @@ All agents coordinate through GitHub Issues, Pull Requests, and command-line too
 Before you start, make sure you have these installed on your computer:
 
 ### Required Software
-- **Node.js & npm** - [Download here](https://nodejs.org/)
+
+**Core Tools**:
+- **Node.js 18+** - [Download here](https://nodejs.org/)
 - **Python 3.10+** - [Download here](https://www.python.org/)
 - **Git** - [Download here](https://git-scm.com/)
 - **GitHub CLI** - [Installation guide](https://cli.github.com/)
 - **Claude Code CLI** - Install with: `npm install -g @anthropic/claude-code`
-- **Docker** (optional, but recommended) - [Download here](https://www.docker.com/)
+
+**Package Managers** (modern, fast alternatives):
+- **pnpm** - Fast Node.js package manager - [Installation guide](https://pnpm.io/installation)
+  - Install: `npm install -g pnpm`
+- **uv** - Fast Python package installer - [Installation guide](https://docs.astral.sh/uv/getting-started/installation/)
+  - Install: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+**Linting & Formatting**:
+- **Biome** - Fast formatter/linter for JS/TS (installed via pnpm in frontend)
+- **Ruff** - Fast Python linter (installed via uv in backend)
+
+**Code Quality**:
+- **pre-commit** - Git hooks framework - [Installation guide](https://pre-commit.com/#installation)
+  - Install: `pip install pre-commit`
+
+**Optional but Recommended**:
+- **Docker** - [Download here](https://www.docker.com/)
 
 ### Required Accounts
 - **GitHub Account** - [Sign up free](https://github.com/signup)
@@ -38,20 +56,23 @@ Before you start, make sure you have these installed on your computer:
 Run these commands to confirm everything is installed correctly:
 
 ```bash
-# Check Node.js
+# Check Node.js and pnpm
 node --version
+pnpm --version
 
-# Check Python
+# Check Python and uv
 python --version
+uv --version
 
-# Check Git
+# Check Git and GitHub CLI
 git --version
-
-# Check GitHub CLI
 gh --version
 
 # Check Claude Code
 ck --version
+
+# Check pre-commit
+pre-commit --version
 ```
 
 ---
@@ -119,19 +140,19 @@ That's it! You're ready to start. 🎉
 **Your role**: Create GitHub Issues for new features
 
 ### 👨‍💻 Full Stack Engineer Agent
-**What they do**: Writes code for the backend and frontend
-**Tools they use**: Claude Code, FastAPI, Next.js
+**What they do**: Writes code for the backend and frontend with high code quality
+**Tools they use**: Claude Code, FastAPI, Next.js, Ruff (linting), Biome (formatting)
 **Your role**: Provide clear feature specifications in Issues
 
 ### ✅ QA Engineer Agent
-**What they do**: Tests the code to make sure it works
-**Tools they use**: Vitest, Playwright, Claude Code
+**What they do**: Tests the code to make sure it works and maintains quality standards
+**Tools they use**: Vitest, Playwright, Claude Code, pre-commit hooks
 **Your role**: Ensure test requirements are clear in Issues
 
 ### 🚀 DevOps Agent
-**What they do**: Manages databases and deployment
-**Tools they use**: Prisma, GitHub Actions, PostgreSQL
-**Your role**: Understand database schema changes
+**What they do**: Manages databases, deployment, and code quality automation
+**Tools they use**: Prisma, GitHub Actions, PostgreSQL, pre-commit, uv
+**Your role**: Understand database schema changes and code quality standards
 
 ---
 
@@ -260,33 +281,56 @@ git commit -m "feat(auth): add login endpoint [agent-action]"
 ### Running Tests Locally
 
 ```bash
+# Install dependencies with pnpm
+pnpm install
+
 # Run all Vitest (unit tests)
-npm run test:vitest
+pnpm test:vitest
 
 # Run Playwright E2E tests
-npx playwright test
+pnpm exec playwright test
 
 # Check test coverage
-npm run test:coverage
+pnpm test:coverage
 
-# Run the custom qa-test command
+# Run the custom qa-test command (runs both)
 ck qa-test
+```
+
+### Code Quality Checks
+
+```bash
+# Install pre-commit hooks
+pip install pre-commit
+pre-commit install
+
+# Run all code quality checks
+pre-commit run --all-files
+
+# Run Ruff linting on backend
+uv run ruff check --fix backend/
+
+# Run Biome on frontend
+pnpm run lint
 ```
 
 ### Managing the Database
 
 ```bash
+# Install Python dependencies
+uv sync
+
 # Create a migration
-npx prisma migrate dev --name add_users_table
+pnpm exec prisma migrate dev --name add_users_table
 
 # View the database schema
-npx prisma studio
+pnpm exec prisma studio
 
 # Reset the database (careful!)
-npx prisma migrate reset
+pnpm exec prisma migrate reset
 
 # Run migrations
-npx prisma migrate deploy
+pnpm exec prisma migrate deploy
 ```
 
 ### Creating Pull Requests
@@ -356,12 +400,14 @@ Initialize the backend (FastAPI) and frontend (Next.js) directories so agents ca
 mkdir -p backend
 cd backend
 
-# Initialize Python environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Initialize Python environment with uv (faster than venv!)
+uv venv
 
-# Install FastAPI and required packages
-pip install fastapi uvicorn sqlalchemy python-jose[cryptography] passlib[bcrypt] python-multipart
+# Activate virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install FastAPI and required packages with uv
+uv pip install fastapi uvicorn sqlalchemy python-jose[cryptography] passlib[bcrypt] python-multipart ruff
 
 # Create main.py
 cat > main.py << 'EOF'
@@ -388,18 +434,19 @@ cd ..
 **Step 2: Create Frontend Directory**
 
 ```bash
-# Create the frontend folder
-npx create-next-app@latest frontend --typescript --eslint --tailwind
+# Create the frontend folder with Next.js (using pnpm!)
+pnpm create next-app@latest frontend --typescript --eslint --tailwind --use-pnpm
 
 cd frontend
 
-# Install testing and database tools
-npm install -D vitest @testing-library/react @testing-library/jest-dom
-npm install -D @playwright/test
-npm install @prisma/client prisma
+# Install testing and database tools with pnpm
+pnpm add -D vitest @testing-library/react @testing-library/jest-dom
+pnpm add -D @playwright/test
+pnpm add -D biome
+pnpm add @prisma/client prisma
 
 # Initialize Prisma
-npx prisma init
+pnpm exec prisma init
 
 cd ..
 ```
@@ -452,31 +499,50 @@ echo 'SECRET_KEY="your-secret-key-change-me"' >> backend/.env
 ```bash
 cd frontend
 
-# Create Prisma migration
-npx prisma migrate dev --name init
+# Create Prisma migration with pnpm
+pnpm exec prisma migrate dev --name init
 
 # Open Prisma Studio to view database
-# npx prisma studio
+# pnpm exec prisma studio
 
 cd ..
 ```
 
-**Step 6: Test Both Servers**
+**Step 6: Set Up Pre-commit Hooks**
 
-Terminal 1 - Backend:
+```bash
+# Install pre-commit framework
+pip install pre-commit
+
+# Initialize pre-commit hooks (creates .pre-commit-config.yaml)
+pre-commit install
+
+# Run hooks on all files to verify setup
+pre-commit run --all-files
+```
+
+**Step 7: Test Both Servers**
+
+Terminal 1 - Backend (with uv):
 ```bash
 cd backend
-source venv/bin/activate
+
+# Activate the virtual environment
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Run the server
 python main.py
 
 # Visit: http://localhost:8000
 # Visit: http://localhost:8000/health
 ```
 
-Terminal 2 - Frontend:
+Terminal 2 - Frontend (with pnpm):
 ```bash
 cd frontend
-npm run dev
+
+# Run development server
+pnpm dev
 
 # Visit: http://localhost:3000
 ```
@@ -497,18 +563,20 @@ gh issue create \
 
 ```bash
 git add .
-git commit -m "chore(setup): initialize project structure with FastAPI and Next.js
+git commit -m "chore(setup): initialize project structure with FastAPI, Next.js, and modern tooling
 
-- Created backend directory with FastAPI application
-- Created frontend directory with Next.js application
+- Created backend directory with FastAPI and uv environment
+- Created frontend directory with Next.js and pnpm
 - Configured Prisma schema with SQLite for development
 - Set up environment files for local development
+- Initialized pre-commit hooks for code quality
+- Configured Ruff for Python linting and Biome for frontend
 
 [agent-action]
 Co-Authored-By: Setup Task <setup@playground.local>"
 ```
 
-Great! Your project is now ready for the agents to start building features! 🚀
+Great! Your project is now ready for the agents to start building features with modern, fast tooling! 🚀
 
 ---
 
@@ -519,9 +587,39 @@ Great! Your project is now ready for the agents to start building features! 🚀
 **Solution**: Make sure all software is installed correctly.
 
 ```bash
-# Reinstall if needed
+# Reinstall core tools if needed
 npm install -g @anthropic/claude-code
-pip install --upgrade pip
+curl -LsSf https://astral.sh/uv/install.sh | sh  # uv
+npm install -g pnpm  # pnpm
+pip install --upgrade pip pre-commit  # pre-commit
+```
+
+### Problem: pnpm not working
+
+**Solution**: Install or update pnpm
+
+```bash
+npm install -g pnpm
+pnpm --version
+```
+
+### Problem: uv not working
+
+**Solution**: Install uv from [astral.sh](https://astral.sh/)
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv --version
+```
+
+### Problem: Pre-commit hooks failing
+
+**Solution**: Run hooks locally to debug
+
+```bash
+pip install pre-commit
+pre-commit run --all-files
+# Let it auto-fix issues (Ruff and Biome will auto-fix many)
 ```
 
 ### Problem: GitHub CLI not authenticating
@@ -536,12 +634,12 @@ gh auth login
 
 ### Problem: Database errors
 
-**Solution**: Reset and reinitialize
+**Solution**: Reset and reinitialize with pnpm
 
 ```bash
 cd frontend
-npx prisma migrate reset
-npx prisma migrate dev --name init
+pnpm exec prisma migrate reset
+pnpm exec prisma migrate dev --name init
 ```
 
 ### Problem: Port already in use

@@ -31,6 +31,11 @@ Build a production-ready full-stack application managed by a coordinated team of
 | **Database (Dev)** | SQLite | Local development speed |
 | **Database (Prod)** | PostgreSQL | Production reliability |
 | **Testing** | Vitest + Playwright | Unit and E2E testing |
+| **Python Package Manager** | uv | Fast, modern Python package installer |
+| **Node Package Manager** | pnpm | Fast, efficient Node.js package manager |
+| **Python Linter** | Ruff | Fast Python linter and formatter |
+| **Frontend Linter** | Biome | Fast formatter and linter for JS/TS |
+| **Code Quality** | pre-commit | Automated hooks for code quality gates |
 | **CI/CD** | GitHub Actions | Automated validation and deployment |
 
 ---

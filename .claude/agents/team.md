@@ -36,15 +36,18 @@ This document defines the specialized roles and responsibilities of the agent te
   - Ensure database schema alignment between frontend and backend
   - Follow the established tech stack patterns
   - Submit PRs with clear, descriptive commit messages
+  - Maintain code quality with Ruff (Python) and Biome (Frontend)
 - **Key Workflow**:
   1. Read FastAPI schema and MCP documentation
   2. Generate matching Next.js components using Prisma ORM
   3. Ensure SQLite dev schema aligns with Python models
-  4. Commit changes with `[agent-action]` tag in message
+  4. Run linting: `uv run ruff check --fix` (backend) and `pnpm run lint` (frontend)
+  5. Commit changes with `[agent-action]` tag in message
 - **Tech Focus**:
-  - **Backend**: FastAPI, SQLAlchemy, Model Context Protocol (MCP)
-  - **Frontend**: Next.js, Prisma Client, React patterns
+  - **Backend**: FastAPI, SQLAlchemy, Model Context Protocol (MCP), Ruff for linting
+  - **Frontend**: Next.js, Prisma Client, React patterns, Biome for formatting/linting
   - **Database**: Prisma schema as the source of truth
+  - **Code Quality**: Pre-commit hooks via `pre-commit` framework
 
 ---
 
@@ -59,9 +62,10 @@ This document defines the specialized roles and responsibilities of the agent te
   - Validate test coverage for new features
   - Document test scenarios and edge cases
 - **Key Commands**:
-  - `npm run test:vitest` - Run unit/component tests
-  - `npx playwright test` - Run E2E tests
-  - `npm run test:coverage` - Check test coverage
+  - `pnpm test:vitest` - Run unit/component tests
+  - `pnpm exec playwright test` - Run E2E tests
+  - `pnpm test:coverage` - Check test coverage
+  - `ck qa-test` - Run all tests (custom command)
 - **Testing Responsibilities**:
   - Unit Tests: Component logic and utilities (Vitest)
   - E2E Tests: User workflows and critical paths (Playwright)
@@ -72,21 +76,25 @@ This document defines the specialized roles and responsibilities of the agent te
 ### 4. DevOps (SRE)
 **Role**: Infrastructure & Database Management
 
-- **Tooling**: GitHub Actions + GitHub CLI + Prisma
+- **Tooling**: GitHub Actions + GitHub CLI + Prisma + pre-commit
 - **Responsibilities**:
   - Manage SQLite to PostgreSQL promotion logic
   - Validate database migrations before deployment
   - Configure and maintain GitHub Actions CI/CD pipeline
   - Ensure environment variable setup for dev/prod separation
   - Monitor schema consistency across environments
+  - Maintain pre-commit hooks for all agents
 - **Key Commands**:
-  - `npx prisma migrate dev` - Create development migrations
-  - `npx prisma migrate deploy` - Execute production migrations
-  - `python -m scripts.migrate_sqlite_to_pg` - Validate migration compatibility
+  - `pnpm exec prisma migrate dev` - Create development migrations
+  - `pnpm exec prisma migrate deploy` - Execute production migrations
+  - `uv run scripts/migrate_sqlite_to_pg.py` - Validate migration compatibility
+  - `pre-commit run --all-files` - Verify all pre-commit hooks pass
+  - `ck db-migrate` - Execute complete migration workflow
 - **Database Strategy**:
   - **Development**: SQLite (`provider = "sqlite"`, `url = "file:./dev.db"`)
   - **Production**: PostgreSQL (via environment variables during CI/CD)
   - **Migrations**: Managed through Prisma, validated in CI before production deployment
+  - **Code Quality**: Pre-commit hooks prevent low-quality code from being committed
 
 ---
 
@@ -151,9 +159,9 @@ Co-Authored-By: Full Stack Engineer <agent@playground.local>
 | Agent | Primary Tools | Key Technologies |
 |-------|---------------|------------------|
 | Project Manager | Claude Code, GitHub CLI | `gh`, `ck /plan`, PLAN.md |
-| Full Stack Engineer | Claude Code, Copilot CLI | FastAPI, Next.js, Prisma |
-| QA Engineer | Vitest, Playwright, Claude CLI | Unit tests, E2E tests |
-| DevOps | GitHub Actions, Prisma CLI | SQLite, PostgreSQL, Migrations |
+| Full Stack Engineer | Claude Code, pnpm, uv, Ruff, Biome | FastAPI, Next.js, Prisma |
+| QA Engineer | Vitest, Playwright, pnpm, Claude CLI | Unit tests, E2E tests, pre-commit |
+| DevOps | GitHub Actions, Prisma, uv, pre-commit | SQLite, PostgreSQL, Migrations |
 
 ---
 

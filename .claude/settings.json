@@ -4,10 +4,14 @@
   },
   "commands": {
     "pm-sync": "gh issue list --label 'priority' && ck /plan",
-    "qa-test": "npm run test:vitest && npx playwright test",
-    "db-migrate": "npx prisma migrate dev && python -m scripts.migrate_sqlite_to_pg"
+    "qa-test": "pnpm test:vitest && pnpm exec playwright test",
+    "db-migrate": "pnpm exec prisma migrate dev && uv run scripts/migrate_sqlite_to_pg.py",
+    "backend-lint": "cd backend && uv run ruff check --fix . && uv run ruff format .",
+    "frontend-lint": "pnpm run lint",
+    "pre-commit-check": "pre-commit run --all-files"
   },
   "hooks": {
-    "post-edit": "npx vitest run --changed"
+    "post-edit": "pnpm exec vitest run --changed",
+    "pre-commit": "pre-commit run --hook-stage commit"
   }
 }

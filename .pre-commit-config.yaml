@@ -1,0 +1,74 @@
+# Pre-commit hooks configuration for Agent Team Playground
+# Install hooks with: pre-commit install
+# Run all hooks: pre-commit run --all-files
+
+repos:
+  # General file fixes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      # Identify files that would conflict in merge
+      - id: check-merge-conflict
+      # Check for large files
+      - id: check-large-files
+        args: ['--maxkb=1000']
+      # Ensure files end with a newline
+      - id: end-of-file-fixer
+      # Trim trailing whitespace
+      - id: trailing-whitespace
+      # Check JSON validity
+      - id: check-json
+      # Check YAML validity
+      - id: check-yaml
+        args: ['--unsafe']
+      # Check TOML validity
+      - id: check-toml
+      # Ensure files parse as valid Python
+      - id: check-ast
+      # Check for debugger imports and py37+ breakpoint()
+      - id: debug-statements
+
+  # Python: Ruff (fast linter and formatter)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.0
+    hooks:
+      # Linting with Ruff
+      - id: ruff
+        args: ['--fix']
+        stages: [commit]
+      # Code formatting with Ruff
+      - id: ruff-format
+        stages: [commit]
+
+  # Frontend: Biome (fast formatter and linter)
+  # Note: This requires biome to be installed in the frontend workspace
+  - repo: https://github.com/biomejs/biome
+    rev: v1.5.3
+    hooks:
+      - id: biome-check
+        args: ['--apply']
+        stages: [commit]
+        files: ^frontend/
+
+  # Detect secrets (API keys, tokens, etc.)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+
+# Configure hooks to run on commit by default
+default_stages: [commit]
+
+# Skip certain files
+exclude: |
+  (?x)^(
+    node_modules/|
+    .venv/|
+    backend/.venv/|
+    dist/|
+    build/|
+    \.next/|
+    prisma/migrations/|
+    __pycache__/
+  )

@@ -38,8 +38,11 @@ fi
 **Trigger**: Only runs if `SCHEMA_CHANGED=true`
 
 ```bash
+# Install dependencies with pnpm
+pnpm install --frozen-lockfile
+
 # Run migrations against dev database (SQLite)
-npx prisma migrate dev --name verify_migration
+pnpm exec prisma migrate dev --name verify_migration
 
 # Validate PostgreSQL compatibility by testing against a temporary Postgres container
 docker run -d \
@@ -51,7 +54,7 @@ docker run -d \
 sleep 5
 
 # Test migration against postgres
-DATABASE_URL=postgresql://postgres:test@localhost/test npx prisma migrate deploy
+DATABASE_URL=postgresql://postgres:test@localhost/test pnpm exec prisma migrate deploy
 
 # Cleanup
 docker stop postgres-test
@@ -69,17 +72,17 @@ echo "✓ Migrations validated for both SQLite and PostgreSQL"
 **Goal**: Execute Vitest unit tests and Playwright E2E tests to validate functionality.
 
 ```bash
-# Install dependencies
-npm ci
+# Install dependencies with pnpm (frozen lockfile ensures reproducibility)
+pnpm install --frozen-lockfile
 
 # Run unit and component tests
-npm run test:vitest -- --reporter=verbose
+pnpm test:vitest -- --reporter=verbose
 
 # Run E2E tests
-npx playwright test --reporter=html
+pnpm exec playwright test --reporter=html
 
 # Generate coverage report
-npm run test:coverage
+pnpm test:coverage
 ```
 
 **Validation Criteria**:
@@ -98,13 +101,16 @@ npm run test:coverage
 **Trigger**: Detects changes in `backend/` directory
 
 ```bash
+# Install Python dependencies with uv
+uv sync
+
 # Check for MCP documentation in FastAPI endpoints
-python -m scripts.validate_mcp_docs \
+uv run scripts/validate_mcp_docs.py \
   --check-endpoints \
   --report-missing
 
 # Validate MCP schema matches frontend expectations
-python -m scripts.validate_mcp_schema --frontend-integration
+uv run scripts/validate_mcp_schema.py --frontend-integration
 ```
 
 **Validation Criteria**:
@@ -116,7 +122,31 @@ python -m scripts.validate_mcp_schema --frontend-integration
 
 ---
 
-### 5. Comment with Workflow Summary
+### 5. Verify Pre-commit Hooks
+
+**Goal**: Ensure all code quality checks pass via pre-commit framework.
+
+**Trigger**: Always runs before merging
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Run all pre-commit hooks
+pre-commit run --all-files
+```
+
+**Validation Criteria**:
+- Ruff linting passes for Python code
+- Biome formatting and linting passes for frontend code
+- No trailing whitespace, end-of-file fixes, etc.
+- All language-specific hooks pass
+
+**Action**: If any hook fails, comment on PR with specific failures and request fixes.
+
+---
+
+### 6. Comment with Workflow Summary
 
 **Goal**: Post a summary comment on the PR with validation results.
 
@@ -124,6 +154,12 @@ python -m scripts.validate_mcp_schema --frontend-integration
 
 ```markdown
 ## Agentic PR Validation Results
+
+### Code Quality
+- Pre-commit Hooks: [✓ Passed]
+  - Ruff (Python): [✓ Passed]
+  - Biome (Frontend): [✓ Passed]
+  - Other Hooks: [✓ Passed]
 
 ### Database Validation
 - Schema Changes: [Yes/No]
@@ -234,9 +270,26 @@ npx prisma migrate reset  # Reset dev database to start
 
 **Solution**:
 ```bash
-# Run tests locally
-npm run test:vitest -- --watch
-npx playwright test --headed  # See browser testing
+# Run tests locally with pnpm
+pnpm test:vitest -- --watch
+pnpm exec playwright test --headed  # See browser testing
+```
+
+### Pre-commit Hooks Fail
+
+**Common Causes**:
+- Python code has linting issues (Ruff)
+- Frontend code has formatting issues (Biome)
+- Trailing whitespace or other file issues
+
+**Solution**:
+```bash
+# Install and run pre-commit hooks locally
+pip install pre-commit
+pre-commit run --all-files
+
+# Or let pre-commit auto-fix issues
+pre-commit run --all-files  # Ruff and Biome will auto-fix many issues
 ```
 
 ### MCP Documentation Missing
@@ -266,8 +319,10 @@ async def create_user(user: UserSchema) -> UserResponse:
 
 ## Future Enhancements
 
+- [x] Code quality checks via pre-commit (Ruff, Biome, etc.)
 - [ ] Automated performance regression testing
-- [ ] Code quality checks (type hints, linting)
-- [ ] Security scanning for dependencies
+- [ ] Advanced type checking (Pyright for backend, TypeScript strict mode)
+- [ ] Security scanning for dependencies (Dependabot, safety)
 - [ ] Automated changelog generation from commit messages
 - [ ] Slack notifications for workflow status
+- [ ] Workflow timing and performance monitoring
