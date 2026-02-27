@@ -38,8 +38,11 @@ fi
 **Trigger**: Only runs if `SCHEMA_CHANGED=true`
 
 ```bash
-# Install dependencies with pnpm
+# Install frontend dependencies with pnpm
 pnpm install --frozen-lockfile
+
+# Install backend dependencies from pyproject.toml
+uv sync
 
 # Run migrations against dev database (SQLite)
 pnpm exec prisma migrate dev --name verify_migration
@@ -69,13 +72,19 @@ echo "✓ Migrations validated for both SQLite and PostgreSQL"
 
 ### 3. Run Full Test Suite
 
-**Goal**: Execute Vitest unit tests and Playwright E2E tests to validate functionality.
+**Goal**: Execute backend pytest and frontend Vitest/Playwright tests to validate functionality.
 
 ```bash
-# Install dependencies with pnpm (frozen lockfile ensures reproducibility)
+# Install backend dependencies from pyproject.toml (includes pytest)
+uv sync
+
+# Run backend tests (pytest configuration from pyproject.toml)
+uv run pytest --cov=agent_team_playground_backend --cov-report=term-missing
+
+# Install frontend dependencies with pnpm (frozen lockfile ensures reproducibility)
 pnpm install --frozen-lockfile
 
-# Run unit and component tests
+# Run frontend unit and component tests
 pnpm test:vitest -- --reporter=verbose
 
 # Run E2E tests
@@ -86,8 +95,9 @@ pnpm test:coverage
 ```
 
 **Validation Criteria**:
-- All tests must pass
-- Coverage for new code should be >80%
+- Backend pytest: All tests pass, coverage >80% (configured in pyproject.toml)
+- Frontend Vitest: All tests pass, coverage >80%
+- Frontend Playwright: All E2E tests pass
 - No regressions in existing tests
 
 **Action**: Comment on PR with test results and coverage summary.
@@ -101,7 +111,7 @@ pnpm test:coverage
 **Trigger**: Detects changes in `backend/` directory
 
 ```bash
-# Install Python dependencies with uv
+# Install Python dependencies with uv (reads from backend/pyproject.toml)
 uv sync
 
 # Check for MCP documentation in FastAPI endpoints
@@ -111,14 +121,18 @@ uv run scripts/validate_mcp_docs.py \
 
 # Validate MCP schema matches frontend expectations
 uv run scripts/validate_mcp_schema.py --frontend-integration
+
+# Run backend linting (Ruff config from pyproject.toml)
+uv run ruff check backend/
 ```
 
 **Validation Criteria**:
 - All new FastAPI endpoints have MCP documentation
 - MCP schema is valid and discoverable by agents
 - Documentation includes parameter descriptions and return types
+- Ruff linting passes (configuration from pyproject.toml)
 
-**Action**: If missing MCP docs, comment on PR requesting updates.
+**Action**: If missing MCP docs or linting fails, comment on PR requesting updates.
 
 ---
 

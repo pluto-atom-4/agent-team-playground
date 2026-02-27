@@ -280,8 +280,28 @@ git commit -m "feat(auth): add login endpoint [agent-action]"
 
 ### Running Tests Locally
 
+**Backend Tests (Python)**:
 ```bash
-# Install dependencies with pnpm
+cd backend
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Dependencies are defined in backend/pyproject.toml
+# Install all dependencies (including pytest)
+uv sync
+
+# Run pytest
+uv run pytest
+
+# Run specific test
+uv run pytest tests/test_auth.py
+
+# Run with coverage report
+uv run pytest --cov
+```
+
+**Frontend Tests (TypeScript)**:
+```bash
+cd frontend
 pnpm install
 
 # Run all Vitest (unit tests)
@@ -299,43 +319,58 @@ ck qa-test
 
 ### Code Quality Checks
 
+**Backend (Ruff configured in pyproject.toml)**:
+```bash
+cd backend
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# uv automatically reads Ruff configuration from backend/pyproject.toml
+uv sync  # Install Ruff and other dev tools
+
+# Lint with Ruff (configuration from pyproject.toml)
+uv run ruff check --fix .
+
+# Format with Ruff
+uv run ruff format .
+
+# Run Ruff checks without fixing
+uv run ruff check .
+```
+
+**Frontend (Biome)**:
+```bash
+cd frontend
+pnpm exec biome check --apply
+```
+
+**Pre-commit Framework (covers both backend and frontend)**:
 ```bash
 # Install pre-commit framework with uv
 uv tool install pre-commit --with pre-commit-uv
 pre-commit install
 
-# Run all code quality checks
+# Run all code quality checks (Ruff + Biome + general hooks)
 pre-commit run --all-files
-
-# Or run specific checks:
-# Run Ruff linting on backend
-uv run ruff check --fix backend/
-
-# Run Biome on frontend
-cd frontend && pnpm exec biome check --apply
 
 # Update hook versions to latest
 pre-commit autoupdate
 ```
 
-**Optional: Add lint-staged for even faster pre-commit**
-
-To only check changed files in pre-commit, install `lint-staged` in the frontend:
+**Optional: Add lint-staged for faster pre-commit on changed files**:
 
 ```bash
 cd frontend
 pnpm add -D lint-staged
-```
 
-Then add to `frontend/package.json`:
-
-```json
+# Add to frontend/package.json
+cat >> package.json << 'EOF'
 {
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": ["biome check --apply"],
     "*.json": ["biome check --apply"]
   }
 }
+EOF
 ```
 
 ### Managing the Database
@@ -430,8 +465,12 @@ uv venv
 # Activate virtual environment
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install FastAPI and required packages with uv
-uv pip install fastapi uvicorn sqlalchemy python-jose[cryptography] passlib[bcrypt] python-multipart ruff
+# Install all dependencies from pyproject.toml
+# uv automatically reads and uses pyproject.toml for dependencies
+uv sync  # Install dependencies including dev tools (Ruff, pytest, etc.)
+
+# Or install just core dependencies (no dev tools)
+uv pip install -e .
 
 # Create main.py
 cat > main.py << 'EOF'
@@ -454,6 +493,13 @@ EOF
 
 cd ..
 ```
+
+**About `pyproject.toml`**:
+- ✓ Centralized Python configuration (dependencies, build system, tool settings)
+- ✓ Specifies Python 3.10, 3.11, 3.12 support
+- ✓ Includes Ruff, pytest, mypy, and other dev tools
+- ✓ Uses `uv sync` for fast dependency management
+- ✓ All packages verified to support Python 3.10+
 
 **Step 2: Create Frontend Directory**
 

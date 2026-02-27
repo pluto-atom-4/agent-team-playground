@@ -74,9 +74,9 @@ This document defines the specialized roles and responsibilities of the agent te
 ---
 
 ### 4. DevOps (SRE)
-**Role**: Infrastructure & Database Management
+**Role**: Infrastructure, Database Management & Python Configuration
 
-- **Tooling**: GitHub Actions + GitHub CLI + Prisma + pre-commit
+- **Tooling**: GitHub Actions + GitHub CLI + Prisma + pre-commit + uv
 - **Responsibilities**:
   - Manage SQLite to PostgreSQL promotion logic
   - Validate database migrations before deployment
@@ -84,12 +84,22 @@ This document defines the specialized roles and responsibilities of the agent te
   - Ensure environment variable setup for dev/prod separation
   - Monitor schema consistency across environments
   - Maintain pre-commit hooks for all agents
+  - **Manage `backend/pyproject.toml`** as source of truth for Python configuration
 - **Key Commands**:
+  - `uv sync` - Install dependencies from backend/pyproject.toml
+  - `uv run pytest` - Run tests (config from pyproject.toml)
+  - `uv run ruff check --fix` - Lint Python code (config from pyproject.toml)
   - `pnpm exec prisma migrate dev` - Create development migrations
   - `pnpm exec prisma migrate deploy` - Execute production migrations
   - `uv run scripts/migrate_sqlite_to_pg.py` - Validate migration compatibility
   - `pre-commit run --all-files` - Verify all pre-commit hooks pass
   - `ck db-migrate` - Execute complete migration workflow
+- **Python Configuration** (`backend/pyproject.toml`):
+  - Declares project dependencies and optional dev dependencies
+  - Configures Ruff linting rules
+  - Configures pytest testing framework
+  - Specifies Python version support: 3.10, 3.11, 3.12
+  - Manages tool configurations (mypy, coverage, isort, etc.)
 - **Database Strategy**:
   - **Development**: SQLite (`provider = "sqlite"`, `url = "file:./dev.db"`)
   - **Production**: PostgreSQL (via environment variables during CI/CD)

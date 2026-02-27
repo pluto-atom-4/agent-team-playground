@@ -24,16 +24,18 @@ Build a production-ready full-stack application managed by a coordinated team of
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Backend** | FastAPI + SQLAlchemy | RESTful API with type safety |
+| **Backend Framework** | FastAPI + SQLAlchemy | RESTful API with type safety |
+| **Backend Config** | pyproject.toml | Centralized Python configuration (dependencies, tools, metadata) |
 | **Protocol** | Model Context Protocol (MCP) | Agent-discoverable API endpoints |
-| **Frontend** | Next.js + React | Modern web UI |
-| **ORM** | Prisma | Type-safe database access |
+| **Frontend Framework** | Next.js + React | Modern web UI |
+| **Database ORM** | Prisma | Type-safe database access |
 | **Database (Dev)** | SQLite | Local development speed |
 | **Database (Prod)** | PostgreSQL | Production reliability |
-| **Testing** | Vitest + Playwright | Unit and E2E testing |
-| **Python Package Manager** | uv | Fast, modern Python package installer |
+| **Testing (Backend)** | pytest | Python unit and integration tests |
+| **Testing (Frontend)** | Vitest + Playwright | Unit and E2E testing |
+| **Python Package Manager** | uv | Fast, modern Python installer (uses pyproject.toml) |
 | **Node Package Manager** | pnpm | Fast, efficient Node.js package manager |
-| **Python Linter** | Ruff | Fast Python linter and formatter |
+| **Python Linter** | Ruff | Fast Python linter/formatter (config in pyproject.toml) |
 | **Frontend Linter** | Biome | Fast formatter and linter for JS/TS |
 | **Code Quality** | pre-commit | Automated hooks for code quality gates |
 | **CI/CD** | GitHub Actions | Automated validation and deployment |

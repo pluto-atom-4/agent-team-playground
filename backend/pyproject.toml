@@ -1,0 +1,211 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-team-playground-backend"
+version = "0.1.0"
+description = "FastAPI backend for Agent Team Playground - a reference implementation for multi-agent full-stack development"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+license = {text = "MIT"}
+authors = [
+    {name = "Agent Team", email = "team@playground.local"}
+]
+keywords = ["fastapi", "agent", "playground", "mcp", "multi-agent"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+]
+
+# Core dependencies (all support Python 3.10+)
+dependencies = [
+    "fastapi>=0.104.0",          # Supports Python 3.7+
+    "uvicorn[standard]>=0.24.0", # Supports Python 3.8+
+    "sqlalchemy>=2.0.0",         # Supports Python 3.7+
+    "python-jose[cryptography]>=3.3.0",  # Supports Python 3.6+
+    "passlib[bcrypt]>=1.7.4",    # Supports Python 2.6+
+    "python-multipart>=0.0.6",   # Supports Python 3.6+
+    "pydantic>=2.0.0",           # Supports Python 3.7+
+    "pydantic-settings>=2.0.0",  # Supports Python 3.8+
+]
+
+# Development dependencies (all support Python 3.10+)
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",             # Supports Python 3.7+
+    "pytest-asyncio>=0.21.0",    # Supports Python 3.7+
+    "pytest-cov>=4.1.0",         # Supports Python 3.7+
+    "httpx>=0.25.0",             # Supports Python 3.8+
+    "ruff>=0.1.0",               # Supports Python 3.7+
+    "mypy>=1.5.0",               # Supports Python 3.8+
+    "types-passlib>=1.7.7",      # Supports Python 3.7+
+]
+
+all = [
+    "agent-team-playground-backend[dev]",
+]
+
+[project.urls]
+Homepage = "https://github.com/pluto-atom-4/agent-team-playground"
+Documentation = "https://github.com/pluto-atom-4/agent-team-playground#readme"
+Repository = "https://github.com/pluto-atom-4/agent-team-playground.git"
+Issues = "https://github.com/pluto-atom-4/agent-team-playground/issues"
+
+# ============================================================================
+# Build Tool Configuration
+# ============================================================================
+
+[tool.hatch.version]
+path = "agent_team_playground_backend/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["agent_team_playground_backend"]
+
+# ============================================================================
+# Ruff - Fast Python Linter & Formatter
+# ============================================================================
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "*.egg-info",
+    "dist",
+    "build",
+    ".pytest_cache",
+    ".mypy_cache",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "C",      # flake8-comprehensions
+    "B",      # flake8-bugbear
+    "UP",     # pyupgrade
+    "ARG",    # flake8-unused-arguments
+    "C90",    # mccabe
+    "ICN",    # flake8-import-conventions
+    "PIE",    # flake8-pie
+    "T201",   # print found
+    "PT",     # flake8-pytest-style
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "W191",   # indentation contains tabs
+    "B008",   # do not perform function calls in argument defaults
+    "C901",   # function is too complex
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agent_team_playground_backend"]
+known-third-party = ["fastapi", "sqlalchemy"]
+
+[tool.ruff.lint.pep8-naming]
+classmethod-decorators = ["classmethod"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# ============================================================================
+# Pytest - Testing Framework
+# ============================================================================
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=agent_team_playground_backend",
+    "--cov-report=term-missing",
+    "--cov-report=html:htmlcov",
+    "--cov-branch",
+    "--cov-fail-under=80",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+# ============================================================================
+# Coverage - Code Coverage Configuration
+# ============================================================================
+[tool.coverage.run]
+source = ["agent_team_playground_backend"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/migrations/*",
+    "*/__main__.py",
+    "*/venv/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+precision = 2
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# ============================================================================
+# MyPy - Static Type Checker
+# ============================================================================
+[tool.mypy]
+python_version = "3.10"
+check_untyped_defs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = "migrations.*"
+ignore_errors = true
+
+# ============================================================================
+# isort - Import Sorting (integrated with Ruff, kept for reference)
+# ============================================================================
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_mode = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+known_first_party = ["agent_team_playground_backend"]
+skip_gitignore = true

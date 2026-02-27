@@ -8,12 +8,17 @@ This is a **full-stack agent team playground**—a reference implementation for 
 
 ### Technical Stack
 
-- **Backend**: Python with FastAPI and Model Context Protocol (MCP)
+- **Backend**: Python 3.10-3.12 with FastAPI and Model Context Protocol (MCP)
+  - Configuration: `backend/pyproject.toml` (centralized project metadata, dependencies, tool settings)
+  - Package Manager: uv (fast Python installer)
+  - Linting: Ruff (configured in pyproject.toml)
+  - Testing: pytest (configured in pyproject.toml)
 - **Frontend**: Next.js with Prisma ORM
+  - Package Manager: pnpm (fast Node.js manager)
+  - Linting: Biome (JavaScript/TypeScript)
 - **Testing**: Vitest (unit/component) and Playwright (E2E)
 - **Database**: SQLite for development, PostgreSQL for production
-- **Package Managers**: uv (Python) and pnpm (Node.js) for fast, modern dependency management
-- **Code Quality**: Ruff (Python linting), Biome (frontend linting/formatting), pre-commit (hooks)
+- **Code Quality**: Ruff (Python), Biome (frontend), pre-commit (hooks)
 - **Infrastructure**: GitHub Actions for CI/CD
 
 ## Agent Team Roles
@@ -29,7 +34,11 @@ Each agent has a specific responsibility and toolset:
    - Tools: Claude Code CLI + Copilot CLI + Ruff + Biome
    - Responsibility: Implements features across FastAPI backend and Next.js frontend
    - Key Workflow: Read FastAPI schema → Generate matching Next.js components → Use Prisma for DB interactions
-   - Code Quality: Use `uv run ruff check --fix` for backend, `pnpm run lint` for frontend
+   - **Backend**: Code is linted via Ruff (configured in `backend/pyproject.toml`)
+     - Run: `uv run ruff check --fix` (Ruff settings read from pyproject.toml)
+     - Run: `uv run pytest` (tests defined in pyproject.toml)
+   - **Frontend**: Code is linted via Biome
+     - Run: `pnpm run lint`
 
 3. **QA Engineer (Tester)**
    - Tools: Vitest + Playwright + Claude CLI + pre-commit
@@ -39,7 +48,11 @@ Each agent has a specific responsibility and toolset:
 4. **DevOps (SRE)**
    - Tools: GitHub Actions + GitHub CLI + uv + pre-commit
    - Responsibility: Manages SQLite → PostgreSQL promotion, validates migrations, maintains CI/CD pipeline, enforces code quality
-   - Key Commands: `ck db-migrate`, `pre-commit run --all-files`
+   - **Python Configuration**: Manages `backend/pyproject.toml` as source of truth
+     - Dependencies in `[project.dependencies]` and `[project.optional-dependencies]`
+     - Ruff configuration in `[tool.ruff]` section
+     - Pytest configuration in `[tool.pytest.ini_options]`
+   - Key Commands: `ck db-migrate`, `pre-commit run --all-files`, `uv sync`
 
 ## Development Workflow
 
@@ -51,12 +64,17 @@ Each agent has a specific responsibility and toolset:
 ### Phase B: Development
 1. Create feature branch: `gh pr checkout -b feature/[name]`
 2. Full Stack Engineer implements feature:
-   - Backend: FastAPI endpoint with MCP documentation, run `uv run ruff check --fix` to lint
+   - Backend: FastAPI endpoint with MCP documentation
+     - Dependencies defined in `backend/pyproject.toml` (auto-installed via `uv sync`)
+     - Run: `uv run ruff check --fix` (Ruff settings from pyproject.toml)
+     - Run: `uv run pytest` (pytest config from pyproject.toml)
    - Frontend: Next.js component with Prisma queries, run `pnpm run lint` to check code quality
 3. Commit with message tagged `[agent-action]` for audit trail
 
 ### Phase C: Validation
-1. QA Engineer runs tests: `ck qa-test` (custom command runs: `pnpm test:vitest && pnpm exec playwright test`)
+1. QA Engineer runs tests:
+   - Backend: `cd backend && uv run pytest` (pytest configured in pyproject.toml)
+   - Frontend: `ck qa-test` (runs: `pnpm test:vitest && pnpm exec playwright test`)
 2. DevOps validates migrations if schema changed: `ck db-migrate`
 3. Verify code quality passes pre-commit: `pre-commit run --all-files`
 4. Create PR: `gh pr create --title "feat: ..." --body "..."`
@@ -126,11 +144,17 @@ To prevent conflicts between agents:
 
 When initializing the project with actual code:
 
-1. **Create backend directory**: `mkdir -p backend && cd backend`
+1. **Create backend directory with pyproject.toml**: `mkdir -p backend && cd backend`
    - Initialize Python environment with uv: `uv venv`
-   - Install FastAPI: `uv pip install fastapi uvicorn sqlalchemy ruff`
+   - Create `backend/pyproject.toml` with centralized project configuration:
+     - Project metadata (name, version, description)
+     - Dependencies and optional dev dependencies
+     - Tool configurations: Ruff, pytest, mypy, coverage, isort
+     - Python version: `>=3.10,<3.13` (supports 3.10, 3.11, 3.12)
+   - Install all dependencies: `uv sync` (reads from pyproject.toml)
    - Implement MCP endpoints to expose API capabilities to agents
-   - Run linting: `uv run ruff check --fix`
+   - Run linting: `uv run ruff check --fix` (uses Ruff config from pyproject.toml)
+   - Run tests: `uv run pytest` (uses pytest config from pyproject.toml)
 
 2. **Create frontend directory**: `mkdir -p frontend && cd frontend`
    - Initialize Next.js with pnpm: `pnpm create next-app@latest frontend --use-pnpm`
@@ -149,5 +173,11 @@ When initializing the project with actual code:
    - Environment variables will switch to PostgreSQL in production
 
 5. **Create PLAN.md**: Document project roadmap and feature backlog
+
+**Key: pyproject.toml is the source of truth for Python configuration**
+- All dependencies managed in one file
+- Tool settings (Ruff, pytest, mypy, etc.) centralized
+- Supports modern Python packaging standards
+- Easily reproducible builds with `uv sync`
 
 Refer to README.md for the complete step-by-step implementation guide with modern tooling.
