@@ -38,6 +38,14 @@ fi
 **Trigger**: Only runs if `SCHEMA_CHANGED=true`
 
 ```bash
+# Set up Node.js 22 LTS environment (GitHub Actions)
+# Uses node-version: 22 in workflow configuration
+node --version  # Should show v22.x.x
+
+# Enable corepack and install pnpm
+corepack enable
+corepack install -g pnpm
+
 # Install frontend dependencies with pnpm
 pnpm install --frozen-lockfile
 

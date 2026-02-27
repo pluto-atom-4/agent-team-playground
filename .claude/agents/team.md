@@ -29,23 +29,27 @@ This document defines the specialized roles and responsibilities of the agent te
 ### 2. Full Stack Engineer (Developer)
 **Role**: Feature Implementation (Backend & Frontend)
 
-- **Tooling**: Claude Code CLI + Copilot CLI
+- **Tooling**: Claude Code CLI + Copilot CLI + Node.js 22 LTS + corepack
 - **Responsibilities**:
   - Implement FastAPI endpoints with MCP documentation
   - Create corresponding Next.js components with Prisma queries
   - Ensure database schema alignment between frontend and backend
-  - Follow the established tech stack patterns
+  - Follow the established tech stack patterns (including Node.js 22 LTS)
   - Submit PRs with clear, descriptive commit messages
   - Maintain code quality with Ruff (Python) and Biome (Frontend)
+  - Ensure corepack + pnpm compliance on frontend
 - **Key Workflow**:
-  1. Read FastAPI schema and MCP documentation
-  2. Generate matching Next.js components using Prisma ORM
-  3. Ensure SQLite dev schema aligns with Python models
-  4. Run linting: `uv run ruff check --fix` (backend) and `pnpm run lint` (frontend)
-  5. Commit changes with `[agent-action]` tag in message
+  1. Ensure Node.js 22 LTS: `nvm use` (uses .nvmrc)
+  2. Read FastAPI schema and MCP documentation
+  3. Generate matching Next.js components using Prisma ORM
+  4. Ensure SQLite dev schema aligns with Python models
+  5. Run linting: `uv run ruff check --fix` (backend) and `pnpm run lint` (frontend)
+  6. Verify corepack/pnpm: `pnpm --version` (from package.json packageManager field)
+  7. Commit changes with `[agent-action]` tag in message
 - **Tech Focus**:
   - **Backend**: FastAPI, SQLAlchemy, Model Context Protocol (MCP), Ruff for linting
   - **Frontend**: Next.js, Prisma Client, React patterns, Biome for formatting/linting
+  - **Node.js**: 22 LTS with corepack managing pnpm v9+ (from frontend/package.json)
   - **Database**: Prisma schema as the source of truth
   - **Code Quality**: Pre-commit hooks via `pre-commit` framework
 
@@ -81,9 +85,9 @@ This document defines the specialized roles and responsibilities of the agent te
 ---
 
 ### 4. DevOps (SRE)
-**Role**: Infrastructure, Database Management & Python Configuration
+**Role**: Infrastructure, Database Management, Python & Node.js Configuration
 
-- **Tooling**: GitHub Actions + GitHub CLI + Prisma + pre-commit + uv
+- **Tooling**: GitHub Actions + GitHub CLI + Prisma + pre-commit + uv + Node.js 22 LTS
 - **Responsibilities**:
   - Manage SQLite to PostgreSQL promotion logic
   - Validate database migrations before deployment
@@ -91,8 +95,14 @@ This document defines the specialized roles and responsibilities of the agent te
   - Ensure environment variable setup for dev/prod separation
   - Monitor schema consistency across environments
   - Maintain pre-commit hooks for all agents
+  - **Manage Node.js versions**: .nvmrc and .node-version for Node.js 22.10.0
+  - **Manage `frontend/package.json`**: Ensure corepack and pnpm version compliance
   - **Manage `backend/pyproject.toml`** as source of truth for Python configuration
 - **Key Commands**:
+  - `nvm use` - Switch to Node.js 22 LTS from .nvmrc
+  - `corepack enable` - Enable corepack for pnpm management
+  - `corepack install -g pnpm` - Install pnpm via corepack
+  - `pnpm --version` - Verify pnpm version (from packageManager field)
   - `uv sync` - Install dependencies from backend/pyproject.toml
   - `uv run pytest` - Run tests (config from pyproject.toml)
   - `uv run ruff check --fix` - Lint Python code (config from pyproject.toml)
