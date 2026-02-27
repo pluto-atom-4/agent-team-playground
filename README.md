@@ -343,34 +343,29 @@ cd frontend
 pnpm exec biome check --apply
 ```
 
-**Pre-commit Framework (covers both backend and frontend)**:
+**Pre-commit Framework with lint-staged (covers both backend and frontend)**:
 ```bash
 # Install pre-commit framework with uv
 uv tool install pre-commit --with pre-commit-uv
 pre-commit install
 
-# Run all code quality checks (Ruff + Biome + general hooks)
+# At this point:
+# - Backend: Ruff linting handled by pre-commit framework
+# - Frontend: lint-staged runs ONLY on staged files (much faster!)
+#   - Configured in frontend/package.json
+#   - Runs Biome checks on changed files
+#   - Runs Vitest on related test files
+#   - Runs Prisma format on schema changes
+
+# Run all code quality checks (Ruff + lint-staged + general hooks)
 pre-commit run --all-files
 
 # Update hook versions to latest
 pre-commit autoupdate
-```
 
-**Optional: Add lint-staged for faster pre-commit on changed files**:
-
-```bash
-cd frontend
-pnpm add -D lint-staged
-
-# Add to frontend/package.json
-cat >> package.json << 'EOF'
-{
-  "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx}": ["biome check --apply"],
-    "*.json": ["biome check --apply"]
-  }
-}
-EOF
+# Speed comparison:
+# - Without lint-staged: Checks ALL 500+ files every commit (~5-10s)
+# - With lint-staged: Checks only 3-5 changed files (~0.5-1s)
 ```
 
 ### Managing the Database
@@ -509,10 +504,11 @@ pnpm create next-app@latest frontend --typescript --eslint --tailwind --use-pnpm
 
 cd frontend
 
-# Install testing and database tools with pnpm
+# Install testing, linting, and database tools with pnpm
 pnpm add -D vitest @testing-library/react @testing-library/jest-dom
 pnpm add -D @playwright/test
 pnpm add -D biome
+pnpm add -D lint-staged  # For fast pre-commit checks on changed files
 pnpm add @prisma/client prisma
 
 # Initialize Prisma
@@ -520,6 +516,12 @@ pnpm exec prisma init
 
 cd ..
 ```
+
+**About lint-staged**:
+- ✓ Only checks files in git staging area (much faster!)
+- ✓ Configured in `frontend/package.json` under `lint-staged` key
+- ✓ Runs Biome checks and tests only on changed files
+- ✓ Integrates with pre-commit framework for automatic git hooks
 
 **Step 3: Create Database Schema**
 

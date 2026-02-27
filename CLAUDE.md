@@ -117,21 +117,30 @@ Agentic workflow for automated PR validation:
 - Validates pre-commit hooks pass
 
 ### `.pre-commit-config.yaml`
-Multi-language pre-commit hooks configuration (Python + JavaScript):
+Multi-language pre-commit hooks configuration (Python + JavaScript with lint-staged):
 - **General**: Merge conflicts, file size limits, trailing whitespace, end-of-file fixes
 - **Backend (Python)**: Ruff linting and formatting for `backend/` and `scripts/`
-- **Frontend (JavaScript/TypeScript)**: Biome via local hook running `pnpm exec biome`
+- **Frontend (JavaScript/TypeScript)**: lint-staged for fast checks on changed files only
+  - Runs via local hook: `pnpm exec lint-staged`
+  - Configuration in `frontend/package.json`
+  - Much faster than checking all files on every commit
 - **Security**: Secrets detection (API keys, tokens, credentials)
 - **Dependency Safety**: Forbids CRLF line endings and new Git submodules
 
 **Installation**:
 ```bash
 uv tool install pre-commit --with pre-commit-uv  # pre-commit-uv makes hooks faster
-pre-commit install  # Install git hooks
+pre-commit install  # Install git hooks (includes lint-staged)
 pre-commit run --all-files  # Run on all files
+
+# Verify lint-staged configuration
+cd frontend && pnpm exec lint-staged --help
 ```
 
-**Optional Enhancement**: Use `lint-staged` in frontend for checking only changed files
+**How lint-staged speeds up commits**:
+- Only checks files in git staging area (3-5 files typically)
+- Skips unchanged files entirely
+- Typical pre-commit time: 0.5-1 second vs 5-10 seconds
 
 ## Agent-Handshake Protocol
 

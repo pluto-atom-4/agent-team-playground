@@ -1,0 +1,62 @@
+{
+  "name": "agent-team-playground-frontend",
+  "version": "0.1.0",
+  "description": "Next.js frontend for Agent Team Playground - multi-agent full-stack development",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check --apply src/ --files *.json *.md",
+    "type-check": "tsc --noEmit",
+    "format": "biome format --write src/",
+    "test": "vitest",
+    "test:vitest": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "e2e": "playwright test",
+    "e2e:debug": "playwright test --debug",
+    "lint-staged": "lint-staged"
+  },
+  "dependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@prisma/client": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@next/eslint-plugin-next": "^15.0.0",
+    "biome": "^1.5.0",
+    "vitest": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@playwright/test": "^1.40.0",
+    "prisma": "^5.0.0",
+    "lint-staged": "^15.0.0",
+    "tailwindcss": "^3.0.0",
+    "postcss": "^8.0.0",
+    "autoprefixer": "^10.0.0"
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "biome check --apply",
+      "vitest run --related"
+    ],
+    "*.{json,jsonc}": [
+      "biome check --apply"
+    ],
+    "*.{md,mdx}": [
+      "biome check --apply"
+    ],
+    "prisma/schema.prisma": [
+      "prisma format"
+    ]
+  }
+}

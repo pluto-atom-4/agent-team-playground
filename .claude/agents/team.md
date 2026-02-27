@@ -52,24 +52,31 @@ This document defines the specialized roles and responsibilities of the agent te
 ---
 
 ### 3. QA Engineer (Tester)
-**Role**: Testing & Quality Assurance
+**Role**: Testing, Quality Assurance & Frontend Code Quality
 
-- **Tooling**: Vitest + Playwright + Claude CLI
+- **Tooling**: Vitest + Playwright + lint-staged + Claude CLI
 - **Responsibilities**:
   - Generate Vitest unit and component tests
   - Create Playwright E2E test scenarios
   - Execute full test suite before marking PRs as "Ready"
   - Validate test coverage for new features
   - Document test scenarios and edge cases
+  - **Manage lint-staged configuration** in `frontend/package.json`
+    - Ensure fast pre-commit checks on changed files only
+    - Configure Biome checks for staged files
+    - Add test runners for related files
 - **Key Commands**:
   - `pnpm test:vitest` - Run unit/component tests
   - `pnpm exec playwright test` - Run E2E tests
   - `pnpm test:coverage` - Check test coverage
+  - `pnpm exec lint-staged` - Run lint-staged checks on staged files
   - `ck qa-test` - Run all tests (custom command)
 - **Testing Responsibilities**:
   - Unit Tests: Component logic and utilities (Vitest)
   - E2E Tests: User workflows and critical paths (Playwright)
   - Coverage: Aim for >80% coverage on new code
+  - Pre-commit: Fast checks via lint-staged on changed files only
+  - Performance: Optimize lint-staged configuration for speed
 
 ---
 
@@ -169,9 +176,9 @@ Co-Authored-By: Full Stack Engineer <agent@playground.local>
 | Agent | Primary Tools | Key Technologies |
 |-------|---------------|------------------|
 | Project Manager | Claude Code, GitHub CLI | `gh`, `ck /plan`, PLAN.md |
-| Full Stack Engineer | Claude Code, pnpm, uv, Ruff, Biome | FastAPI, Next.js, Prisma |
-| QA Engineer | Vitest, Playwright, pnpm, Claude CLI | Unit tests, E2E tests, pre-commit |
-| DevOps | GitHub Actions, Prisma, uv, pre-commit | SQLite, PostgreSQL, Migrations |
+| Full Stack Engineer | Claude Code, pnpm, uv, Ruff, Biome | FastAPI, Next.js, Prisma, lint-staged |
+| QA Engineer | Vitest, Playwright, pnpm, lint-staged | Unit tests, E2E tests, fast pre-commit |
+| DevOps | GitHub Actions, Prisma, uv, pre-commit | SQLite, PostgreSQL, Migrations, pyproject.toml |
 
 ---
 

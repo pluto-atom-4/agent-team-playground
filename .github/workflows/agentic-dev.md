@@ -136,9 +136,9 @@ uv run ruff check backend/
 
 ---
 
-### 5. Verify Pre-commit Hooks
+### 5. Verify Pre-commit Hooks (with lint-staged for frontend)
 
-**Goal**: Ensure all code quality checks pass via pre-commit framework (multi-language: Python + JavaScript).
+**Goal**: Ensure all code quality checks pass via pre-commit framework with lint-staged optimization for frontend.
 
 **Trigger**: Always runs before merging
 
@@ -147,19 +147,35 @@ uv run ruff check backend/
 uv tool install pre-commit --with pre-commit-uv
 
 # Run all pre-commit hooks
+# Backend: Ruff checks all Python files
+# Frontend: lint-staged checks only changed files (much faster!)
 pre-commit run --all-files
 ```
 
+**Pre-commit Architecture**:
+- **Backend (Ruff)**: Synchronous, checks all Python files for consistency
+- **Frontend (lint-staged)**: Checks only git staging area files (optimized)
+  - Configuration in `frontend/package.json`
+  - Runs Biome on changed files
+  - Runs Vitest on related test files
+  - Runs Prisma format on schema changes
+  - Much faster than checking all frontend files
+
 **Validation Criteria**:
 - ✓ Ruff: Python linting and formatting for `backend/` passes
-- ✓ Biome: JavaScript/TypeScript formatting for `frontend/` passes
+- ✓ lint-staged: Biome checks pass on changed frontend files
+- ✓ lint-staged: Vitest runs on related test files
 - ✓ General: No merge conflicts, trailing whitespace, or invalid JSON/YAML
 - ✓ Secrets: No API keys or credentials detected
-- ✓ All language-specific hooks pass
+- ✓ All hooks pass
+
+**Performance**:
+- Without lint-staged: Checks all files (~5-10 seconds)
+- With lint-staged: Checks only changed files (~0.5-1 second)
 
 **Action**: If any hook fails, comment on PR with specific failures and request fixes.
 
-**Note**: Most issues are auto-fixed by Ruff and Biome. Developers should run `pre-commit run --all-files` locally before pushing.
+**Note**: Most issues are auto-fixed by Ruff and lint-staged tools. Developers should run `pre-commit run --all-files` locally before pushing.
 
 ---
 

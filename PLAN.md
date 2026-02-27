@@ -37,6 +37,7 @@ Build a production-ready full-stack application managed by a coordinated team of
 | **Node Package Manager** | pnpm | Fast, efficient Node.js package manager |
 | **Python Linter** | Ruff | Fast Python linter/formatter (config in pyproject.toml) |
 | **Frontend Linter** | Biome | Fast formatter and linter for JS/TS |
+| **Fast Pre-commit** | lint-staged | Only checks changed files on commit (0.5-1s vs 5-10s) |
 | **Code Quality** | pre-commit | Automated hooks for code quality gates |
 | **CI/CD** | GitHub Actions | Automated validation and deployment |
 
@@ -47,11 +48,12 @@ Build a production-ready full-stack application managed by a coordinated team of
 ### Phase 1: Foundation (MVP)
 
 - [ ] **Setup**: Project initialization and repository structure
-  - [ ] FastAPI project structure created
-  - [ ] Next.js project initialized with Prisma
-  - [ ] Pre-commit hooks configured (Ruff for Python, Biome for frontend)
+  - [ ] FastAPI project structure created with pyproject.toml
+  - [ ] Next.js project initialized with Prisma and package.json
+  - [ ] lint-staged configured for fast pre-commit frontend checks
+  - [ ] Pre-commit hooks configured (Ruff for Python, lint-staged for frontend)
   - [ ] CI/CD pipeline configured with pre-commit validation
-  - **Assigned to**: DevOps
+  - **Assigned to**: DevOps + QA Engineer (lint-staged config)
   - **Status**: Not Started
 
 - [ ] **Core API**: User management endpoints with MCP documentation

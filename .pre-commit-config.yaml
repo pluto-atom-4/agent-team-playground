@@ -1,5 +1,5 @@
 # Pre-commit hooks configuration for Agent Team Playground
-# Multi-language framework: Python (uv) and JavaScript (pnpm)
+# Multi-language framework: Python (uv) and JavaScript (pnpm + lint-staged)
 #
 # Installation:
 #   uv tool install pre-commit --with pre-commit-uv
@@ -8,8 +8,12 @@
 #
 # Usage:
 #   pre-commit run --all-files    # Run all hooks on all files
-#   pre-commit run                 # Run hooks on staged files only
+#   pre-commit run                 # Run hooks on staged files only (uses lint-staged)
 #   pre-commit autoupdate          # Update hook versions
+#
+# Frontend optimization: lint-staged only checks files in git staging area
+# This makes pre-commit commit-time checks much faster for large projects
+# lint-staged configuration is in frontend/package.json
 
 repos:
   # ============================================================================
@@ -70,17 +74,19 @@ repos:
   # ============================================================================
   # FRONTEND: JavaScript/TypeScript with pnpm package manager
   # ============================================================================
-  # Local hook: Run Biome via pnpm for frontend code
+  # Local hook: Run lint-staged for faster checks on changed files only
+  # lint-staged is configured in frontend/package.json and only checks staged files
   - repo: local
     hooks:
-      - id: biome-check
-        name: Biome (Frontend Linting & Formatting)
-        entry: bash -c 'cd frontend && pnpm exec biome check --apply --files'
+      - id: lint-staged
+        name: lint-staged (Frontend)
+        entry: bash -c 'cd frontend && pnpm exec lint-staged'
         language: system
         stages: [commit]
-        files: ^frontend/(src|app)/.*\.(js|jsx|ts|tsx|json|css)$
         pass_filenames: false
+        files: ^frontend/
         exclude: ^frontend/node_modules/
+        always_run: false
 
   # ============================================================================
   # Security & Secrets Detection
