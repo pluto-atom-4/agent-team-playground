@@ -1,74 +1,133 @@
 # Pre-commit hooks configuration for Agent Team Playground
-# Install hooks with: pre-commit install
-# Run all hooks: pre-commit run --all-files
+# Multi-language framework: Python (uv) and JavaScript (pnpm)
+#
+# Installation:
+#   uv tool install pre-commit --with pre-commit-uv
+#   pre-commit install
+#   pre-commit run --all-files
+#
+# Usage:
+#   pre-commit run --all-files    # Run all hooks on all files
+#   pre-commit run                 # Run hooks on staged files only
+#   pre-commit autoupdate          # Update hook versions
 
 repos:
-  # General file fixes
+  # ============================================================================
+  # General file fixes (applies to all files)
+  # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       # Identify files that would conflict in merge
       - id: check-merge-conflict
+
       # Check for large files
       - id: check-large-files
         args: ['--maxkb=1000']
+
       # Ensure files end with a newline
       - id: end-of-file-fixer
+
       # Trim trailing whitespace
       - id: trailing-whitespace
+        args: [--markdown-template='']
+
       # Check JSON validity
       - id: check-json
+
       # Check YAML validity
       - id: check-yaml
         args: ['--unsafe']
+
       # Check TOML validity
       - id: check-toml
+
       # Ensure files parse as valid Python
       - id: check-ast
+
       # Check for debugger imports and py37+ breakpoint()
       - id: debug-statements
 
-  # Python: Ruff (fast linter and formatter)
+  # ============================================================================
+  # BACKEND: Python with uv package manager
+  # ============================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.2.0
     hooks:
-      # Linting with Ruff
+      # Linting with Ruff (fast, Rust-based)
       - id: ruff
-        args: ['--fix']
+        args: ['--fix', '--exit-zero']
         stages: [commit]
+        files: ^(backend|scripts)/
+        exclude: ^backend/\.venv/
+
       # Code formatting with Ruff
       - id: ruff-format
         stages: [commit]
+        files: ^(backend|scripts)/
+        exclude: ^backend/\.venv/
 
-  # Frontend: Biome (fast formatter and linter)
-  # Note: This requires biome to be installed in the frontend workspace
-  - repo: https://github.com/biomejs/biome
-    rev: v1.5.3
+  # ============================================================================
+  # FRONTEND: JavaScript/TypeScript with pnpm package manager
+  # ============================================================================
+  # Local hook: Run Biome via pnpm for frontend code
+  - repo: local
     hooks:
       - id: biome-check
-        args: ['--apply']
+        name: Biome (Frontend Linting & Formatting)
+        entry: bash -c 'cd frontend && pnpm exec biome check --apply --files'
+        language: system
         stages: [commit]
-        files: ^frontend/
+        files: ^frontend/(src|app)/.*\.(js|jsx|ts|tsx|json|css)$
+        pass_filenames: false
+        exclude: ^frontend/node_modules/
 
-  # Detect secrets (API keys, tokens, etc.)
+  # ============================================================================
+  # Security & Secrets Detection
+  # ============================================================================
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
     hooks:
       - id: detect-secrets
         args: ['--baseline', '.secrets.baseline']
+        exclude: ^frontend/(package-lock\.json|pnpm-lock\.yaml)
 
-# Configure hooks to run on commit by default
+  # ============================================================================
+  # Dependency Safety
+  # ============================================================================
+  # Detect vulnerable Python dependencies
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.5.4
+    hooks:
+      - id: forbid-crlf
+      - id: forbid-new-submodules
+
+# ============================================================================
+# Configuration
+# ============================================================================
+
+# Run hooks on these stages
 default_stages: [commit]
 
-# Skip certain files
+# Skip large or irrelevant files
 exclude: |
   (?x)^(
     node_modules/|
-    .venv/|
-    backend/.venv/|
+    \.venv/|
+    backend/\.venv/|
+    frontend/\.venv/|
     dist/|
     build/|
     \.next/|
+    \.nuxt/|
+    out/|
     prisma/migrations/|
-    __pycache__/
+    __pycache__/|
+    \.egg-info/|
+    \.pytest_cache/|
+    \.coverage|
+    coverage/|
+    playwright-report/|
+    test-results/|
+    \.parcel-cache/
   )

@@ -47,7 +47,8 @@ Build a production-ready full-stack application managed by a coordinated team of
 - [ ] **Setup**: Project initialization and repository structure
   - [ ] FastAPI project structure created
   - [ ] Next.js project initialized with Prisma
-  - [ ] CI/CD pipeline configured
+  - [ ] Pre-commit hooks configured (Ruff for Python, Biome for frontend)
+  - [ ] CI/CD pipeline configured with pre-commit validation
   - **Assigned to**: DevOps
   - **Status**: Not Started
 

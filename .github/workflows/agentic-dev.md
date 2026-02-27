@@ -124,25 +124,28 @@ uv run scripts/validate_mcp_schema.py --frontend-integration
 
 ### 5. Verify Pre-commit Hooks
 
-**Goal**: Ensure all code quality checks pass via pre-commit framework.
+**Goal**: Ensure all code quality checks pass via pre-commit framework (multi-language: Python + JavaScript).
 
 **Trigger**: Always runs before merging
 
 ```bash
-# Install pre-commit
-pip install pre-commit
+# Install pre-commit framework with uv (includes pre-commit-uv for speed)
+uv tool install pre-commit --with pre-commit-uv
 
 # Run all pre-commit hooks
 pre-commit run --all-files
 ```
 
 **Validation Criteria**:
-- Ruff linting passes for Python code
-- Biome formatting and linting passes for frontend code
-- No trailing whitespace, end-of-file fixes, etc.
-- All language-specific hooks pass
+- ✓ Ruff: Python linting and formatting for `backend/` passes
+- ✓ Biome: JavaScript/TypeScript formatting for `frontend/` passes
+- ✓ General: No merge conflicts, trailing whitespace, or invalid JSON/YAML
+- ✓ Secrets: No API keys or credentials detected
+- ✓ All language-specific hooks pass
 
 **Action**: If any hook fails, comment on PR with specific failures and request fixes.
+
+**Note**: Most issues are auto-fixed by Ruff and Biome. Developers should run `pre-commit run --all-files` locally before pushing.
 
 ---
 

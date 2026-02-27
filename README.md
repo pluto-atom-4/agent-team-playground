@@ -300,18 +300,42 @@ ck qa-test
 ### Code Quality Checks
 
 ```bash
-# Install pre-commit hooks
-pip install pre-commit
+# Install pre-commit framework with uv
+uv tool install pre-commit --with pre-commit-uv
 pre-commit install
 
 # Run all code quality checks
 pre-commit run --all-files
 
+# Or run specific checks:
 # Run Ruff linting on backend
 uv run ruff check --fix backend/
 
 # Run Biome on frontend
-pnpm run lint
+cd frontend && pnpm exec biome check --apply
+
+# Update hook versions to latest
+pre-commit autoupdate
+```
+
+**Optional: Add lint-staged for even faster pre-commit**
+
+To only check changed files in pre-commit, install `lint-staged` in the frontend:
+
+```bash
+cd frontend
+pnpm add -D lint-staged
+```
+
+Then add to `frontend/package.json`:
+
+```json
+{
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": ["biome check --apply"],
+    "*.json": ["biome check --apply"]
+  }
+}
 ```
 
 ### Managing the Database
@@ -511,15 +535,22 @@ cd ..
 **Step 6: Set Up Pre-commit Hooks**
 
 ```bash
-# Install pre-commit framework
-pip install pre-commit
+# Install pre-commit framework with uv (includes pre-commit-uv for faster hook execution)
+uv tool install pre-commit --with pre-commit-uv
 
-# Initialize pre-commit hooks (creates .pre-commit-config.yaml)
+# Initialize pre-commit hooks in .git/hooks/
 pre-commit install
 
-# Run hooks on all files to verify setup
+# Run hooks on all files to verify setup (this may auto-fix some issues)
 pre-commit run --all-files
 ```
+
+**What pre-commit does**:
+- ✅ Ruff: Lints and formats Python code in `backend/`
+- ✅ Biome: Formats and lints JavaScript/TypeScript in `frontend/`
+- ✅ General: Fixes trailing whitespace, ensures newlines, validates JSON/YAML
+- ✅ Secrets: Prevents commits of API keys, tokens, or credentials
+- 🔄 Auto-fixes: Many issues are automatically fixed before commit
 
 **Step 7: Test Both Servers**
 
@@ -614,12 +645,22 @@ uv --version
 
 ### Problem: Pre-commit hooks failing
 
-**Solution**: Run hooks locally to debug
+**Solution**: Run hooks locally to debug and auto-fix
 
 ```bash
-pip install pre-commit
+# Install with pre-commit-uv plugin for faster execution
+uv tool install pre-commit --with pre-commit-uv
+pre-commit install
+
+# Run on all files (auto-fixes most issues)
 pre-commit run --all-files
-# Let it auto-fix issues (Ruff and Biome will auto-fix many)
+
+# Run on staged files only
+pre-commit run
+
+# Debug a specific hook
+pre-commit run ruff --all-files
+pre-commit run biome-check --all-files
 ```
 
 ### Problem: GitHub CLI not authenticating

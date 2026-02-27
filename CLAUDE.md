@@ -99,11 +99,21 @@ Agentic workflow for automated PR validation:
 - Validates pre-commit hooks pass
 
 ### `.pre-commit-config.yaml`
-Configuration for pre-commit hooks framework:
-- Ruff: Python linting and formatting
-- Biome: Frontend linting and formatting
-- General hooks: Trailing whitespace, end-of-file fixes, JSON/YAML validation
-- Secrets detection: Prevents accidental commits of API keys/tokens
+Multi-language pre-commit hooks configuration (Python + JavaScript):
+- **General**: Merge conflicts, file size limits, trailing whitespace, end-of-file fixes
+- **Backend (Python)**: Ruff linting and formatting for `backend/` and `scripts/`
+- **Frontend (JavaScript/TypeScript)**: Biome via local hook running `pnpm exec biome`
+- **Security**: Secrets detection (API keys, tokens, credentials)
+- **Dependency Safety**: Forbids CRLF line endings and new Git submodules
+
+**Installation**:
+```bash
+uv tool install pre-commit --with pre-commit-uv  # pre-commit-uv makes hooks faster
+pre-commit install  # Install git hooks
+pre-commit run --all-files  # Run on all files
+```
+
+**Optional Enhancement**: Use `lint-staged` in frontend for checking only changed files
 
 ## Agent-Handshake Protocol
 
@@ -129,9 +139,10 @@ When initializing the project with actual code:
    - Run linting: `pnpm run lint`
 
 3. **Set Up Code Quality**:
-   - Install pre-commit: `pip install pre-commit`
+   - Install pre-commit with uv: `uv tool install pre-commit --with pre-commit-uv`
    - Initialize hooks: `pre-commit install`
    - Run all hooks: `pre-commit run --all-files`
+   - Optional: Add lint-staged to frontend for faster checks on changed files only
 
 4. **Database Setup**:
    - Configure `prisma/schema.prisma` with SQLite for dev
