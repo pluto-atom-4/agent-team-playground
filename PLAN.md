@@ -24,17 +24,19 @@ Build a production-ready full-stack application managed by a coordinated team of
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
+| **Node.js Runtime** | Node.js 22 LTS or later | Modern JavaScript runtime with built-in corepack |
+| **Node.js Version Mgmt** | .nvmrc + .node-version | Specify Node.js 22.10.0 (for nvm and nodenv) |
+| **Node Package Manager** | pnpm 9+ (via corepack) | Fast, efficient Node.js package manager (auto-managed by corepack) |
 | **Backend Framework** | FastAPI + SQLAlchemy | RESTful API with type safety |
 | **Backend Config** | pyproject.toml | Centralized Python configuration (dependencies, tools, metadata) |
 | **Protocol** | Model Context Protocol (MCP) | Agent-discoverable API endpoints |
-| **Frontend Framework** | Next.js + React | Modern web UI |
+| **Frontend Framework** | Next.js + React | Modern web UI (requires Node.js 22 LTS) |
 | **Database ORM** | Prisma | Type-safe database access |
 | **Database (Dev)** | SQLite | Local development speed |
 | **Database (Prod)** | PostgreSQL | Production reliability |
 | **Testing (Backend)** | pytest | Python unit and integration tests |
 | **Testing (Frontend)** | Vitest + Playwright | Unit and E2E testing |
 | **Python Package Manager** | uv | Fast, modern Python installer (uses pyproject.toml) |
-| **Node Package Manager** | pnpm | Fast, efficient Node.js package manager |
 | **Python Linter** | Ruff | Fast Python linter/formatter (config in pyproject.toml) |
 | **Frontend Linter** | Biome | Fast formatter and linter for JS/TS |
 | **Fast Pre-commit** | lint-staged | Only checks changed files on commit (0.5-1s vs 5-10s) |
@@ -48,12 +50,14 @@ Build a production-ready full-stack application managed by a coordinated team of
 ### Phase 1: Foundation (MVP)
 
 - [ ] **Setup**: Project initialization and repository structure
+  - [ ] Node.js 22 LTS configured (.nvmrc, .node-version, corepack enabled)
+  - [ ] pnpm managed by corepack (packageManager field in package.json)
   - [ ] FastAPI project structure created with pyproject.toml
   - [ ] Next.js project initialized with Prisma and package.json
   - [ ] lint-staged configured for fast pre-commit frontend checks
   - [ ] Pre-commit hooks configured (Ruff for Python, lint-staged for frontend)
   - [ ] CI/CD pipeline configured with pre-commit validation
-  - **Assigned to**: DevOps + QA Engineer (lint-staged config)
+  - **Assigned to**: DevOps (Node.js/corepack) + Full Stack Engineer (frontend) + QA Engineer (lint-staged)
   - **Status**: Not Started
 
 - [ ] **Core API**: User management endpoints with MCP documentation

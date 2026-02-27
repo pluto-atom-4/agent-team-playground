@@ -24,15 +24,20 @@ Before you start, make sure you have these installed on your computer:
 ### Required Software
 
 **Core Tools**:
-- **Node.js 18+** - [Download here](https://nodejs.org/)
+- **Node.js 22 LTS or later** - [Download here](https://nodejs.org/)
+  - Includes corepack (built-in, no separate installation needed)
+  - Verify: `node --version` (should be >=22.0.0)
+  - Check corepack: `corepack --version`
 - **Python 3.10+** - [Download here](https://www.python.org/)
 - **Git** - [Download here](https://git-scm.com/)
 - **GitHub CLI** - [Installation guide](https://cli.github.com/)
 - **Claude Code CLI** - Install with: `npm install -g @anthropic/claude-code`
 
 **Package Managers** (modern, fast alternatives):
-- **pnpm** - Fast Node.js package manager - [Installation guide](https://pnpm.io/installation)
-  - Install: `npm install -g pnpm`
+- **pnpm** - Managed by corepack (automatic, no manual install)
+  - Corepack reads `packageManager` from `frontend/package.json`
+  - Enable corepack: `corepack enable`
+  - Check pnpm version: `pnpm --version`
 - **uv** - Fast Python package installer - [Installation guide](https://docs.astral.sh/uv/getting-started/installation/)
   - Install: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
@@ -46,18 +51,32 @@ Before you start, make sure you have these installed on your computer:
 
 **Optional but Recommended**:
 - **Docker** - [Download here](https://www.docker.com/)
+- **nvm** (Node Version Manager) - [Installation guide](https://github.com/nvm-sh/nvm)
+  - Automatically uses Node.js 22 LTS via `.nvmrc`
+  - Run: `nvm use`
 
 ### Required Accounts
 - **GitHub Account** - [Sign up free](https://github.com/signup)
 - **GitHub CLI Authentication** - Run `gh auth login` after installing
 
-### Verify Your Installation
+### Verify and Set Up Your Installation
 
-Run these commands to confirm everything is installed correctly:
+Run these commands to confirm everything is installed correctly and set up corepack + pnpm:
 
 ```bash
-# Check Node.js and pnpm
+# Check Node.js 22 LTS (should be >=22.0.0)
 node --version
+
+# Check corepack is available (built into Node.js 22+)
+corepack --version
+
+# Enable corepack to manage pnpm (run once per system)
+corepack enable
+
+# Install pnpm globally via corepack
+corepack install -g pnpm
+
+# Verify pnpm is installed and check version (should be >=9.0.0)
 pnpm --version
 
 # Check Python and uv
@@ -73,17 +92,42 @@ ck --version
 
 # Check pre-commit
 pre-commit --version
+
+# Optional: If you have nvm installed, verify Node.js version
+# This uses the version specified in .nvmrc (22.10.0)
+nvm use  # Switch to Node.js 22.10.0
+node --version  # Should output v22.10.0
 ```
 
 ---
 
 ## Quick Start (5 Minutes)
 
+### Step 0: Set Up Node.js 22 LTS and pnpm (One-time setup)
+
+```bash
+# If using nvm, switch to Node.js 22 LTS first
+nvm use  # Uses Node.js 22.10.0 from .nvmrc
+node --version  # Should show v22.10.0+
+
+# Enable corepack (manages pnpm automatically)
+corepack enable
+
+# Install pnpm globally via corepack
+corepack install -g pnpm
+
+# Verify pnpm is installed
+pnpm --version  # Should show >=9.0.0
+```
+
 ### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/pluto-atom-4/agent-team-playground.git
 cd agent-team-playground
+
+# If using nvm, ensure correct Node.js version
+nvm use  # Automatically switches to Node.js 22.10.0
 ```
 
 ### Step 2: Verify the Setup
@@ -499,7 +543,12 @@ cd ..
 **Step 2: Create Frontend Directory**
 
 ```bash
-# Create the frontend folder with Next.js (using pnpm!)
+# Ensure you're on Node.js 22 LTS and corepack is enabled
+nvm use  # Uses Node.js 22.10.0
+corepack enable
+corepack install -g pnpm
+
+# Create the frontend folder with Next.js (using pnpm managed by corepack!)
 pnpm create next-app@latest frontend --typescript --eslint --tailwind --use-pnpm
 
 cd frontend
@@ -517,11 +566,12 @@ pnpm exec prisma init
 cd ..
 ```
 
-**About lint-staged**:
-- ✓ Only checks files in git staging area (much faster!)
-- ✓ Configured in `frontend/package.json` under `lint-staged` key
-- ✓ Runs Biome checks and tests only on changed files
-- ✓ Integrates with pre-commit framework for automatic git hooks
+**About Node.js 22 LTS + corepack + pnpm**:
+- ✓ Node.js 22 LTS: Modern LTS version with built-in corepack
+- ✓ Corepack: Automatically manages pnpm version from `frontend/package.json`
+- ✓ pnpm: Configured in `packageManager` field for version 9+
+- ✓ lint-staged: Only checks files in git staging area (much faster!)
+- ✓ Integration: All tools work seamlessly together
 
 **Step 3: Create Database Schema**
 

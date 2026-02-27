@@ -8,14 +8,19 @@ This is a **full-stack agent team playground**—a reference implementation for 
 
 ### Technical Stack
 
+- **Node.js**: 22 LTS or later (includes corepack built-in)
+  - Version Management: .nvmrc (for nvm) and .node-version (for nodenv)
+  - Package Manager: pnpm (managed by corepack from package.json)
+  - Configuration: `frontend/package.json` with packageManager field
 - **Backend**: Python 3.10-3.12 with FastAPI and Model Context Protocol (MCP)
   - Configuration: `backend/pyproject.toml` (centralized project metadata, dependencies, tool settings)
   - Package Manager: uv (fast Python installer)
   - Linting: Ruff (configured in pyproject.toml)
   - Testing: pytest (configured in pyproject.toml)
-- **Frontend**: Next.js with Prisma ORM
-  - Package Manager: pnpm (fast Node.js manager)
+- **Frontend**: Next.js with Prisma ORM (Node.js 22 LTS + corepack)
+  - Package Manager: pnpm (managed by corepack, version 9+)
   - Linting: Biome (JavaScript/TypeScript)
+  - Fast pre-commit: lint-staged (checks only changed files)
 - **Testing**: Vitest (unit/component) and Playwright (E2E)
 - **Database**: SQLite for development, PostgreSQL for production
 - **Code Quality**: Ruff (Python), Biome (frontend), pre-commit (hooks)
@@ -153,6 +158,13 @@ To prevent conflicts between agents:
 
 When initializing the project with actual code:
 
+0. **Set Up Node.js 22 LTS and corepack** (one-time setup):
+   - Install Node.js 22 LTS or later from https://nodejs.org/
+   - If using nvm: `nvm use` (automatically uses Node.js 22.10.0 from .nvmrc)
+   - Enable corepack: `corepack enable`
+   - Install pnpm via corepack: `corepack install -g pnpm`
+   - Verify: `pnpm --version` (should be >=9.0.0)
+
 1. **Create backend directory with pyproject.toml**: `mkdir -p backend && cd backend`
    - Initialize Python environment with uv: `uv venv`
    - Create `backend/pyproject.toml` with centralized project configuration:
@@ -165,17 +177,21 @@ When initializing the project with actual code:
    - Run linting: `uv run ruff check --fix` (uses Ruff config from pyproject.toml)
    - Run tests: `uv run pytest` (uses pytest config from pyproject.toml)
 
-2. **Create frontend directory**: `mkdir -p frontend && cd frontend`
+2. **Create frontend directory with Node.js 22 LTS**: `mkdir -p frontend && cd frontend`
+   - Ensure Node.js 22 LTS: `nvm use && node --version`
+   - Corepack manages pnpm (no separate install needed)
    - Initialize Next.js with pnpm: `pnpm create next-app@latest frontend --use-pnpm`
    - Install Prisma: `pnpm add @prisma/client prisma`
-   - Install test tools: `pnpm add -D vitest @testing-library/react @playwright/test biome`
+   - Install test tools: `pnpm add -D vitest @testing-library/react @playwright/test`
+   - Install linting and quality: `pnpm add -D biome lint-staged`
+   - Note: `frontend/package.json` has `packageManager` field for pnpm version lock
    - Run linting: `pnpm run lint`
 
 3. **Set Up Code Quality**:
    - Install pre-commit with uv: `uv tool install pre-commit --with pre-commit-uv`
    - Initialize hooks: `pre-commit install`
    - Run all hooks: `pre-commit run --all-files`
-   - Optional: Add lint-staged to frontend for faster checks on changed files only
+   - lint-staged automatically integrates with pre-commit for fast frontend checks
 
 4. **Database Setup**:
    - Configure `prisma/schema.prisma` with SQLite for dev
@@ -183,10 +199,10 @@ When initializing the project with actual code:
 
 5. **Create PLAN.md**: Document project roadmap and feature backlog
 
-**Key: pyproject.toml is the source of truth for Python configuration**
-- All dependencies managed in one file
-- Tool settings (Ruff, pytest, mypy, etc.) centralized
-- Supports modern Python packaging standards
-- Easily reproducible builds with `uv sync`
+**Key Configuration Files**:
+- `backend/pyproject.toml`: Python source of truth (dependencies, tools, settings)
+- `frontend/package.json`: Node.js source of truth (packageManager field, lint-staged)
+- `.nvmrc` and `.node-version`: Node.js 22.10.0 version specification
+- `.pre-commit-config.yaml`: Git hooks configuration (Ruff + lint-staged)
 
 Refer to README.md for the complete step-by-step implementation guide with modern tooling.
